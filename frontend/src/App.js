@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Upload from "./pages/Upload";
 import Browse from "./pages/Browse";
+import Admin from "./pages/Admin";
 
 const Private = ({ children }) => {
   const { token } = useContext(AuthContext);
@@ -22,6 +23,14 @@ function App() {
           <Route path="/" element={<Browse />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route
+            path="/admin"
+            element={
+              <Private>
+                <Admin />
+              </Private>
+            }
+          />
           <Route
             path="/dashboard"
             element={

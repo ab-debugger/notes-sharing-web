@@ -8,13 +8,19 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
 
   useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      axios
-        .get("/api/auth/me")
-        .then((res) => setUser(res.data))
-        .catch(() => logout());
-    }
+    const loadUser = async () => {
+      if (!token) return;
+
+      try {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        const res = await axios.get("/api/auth/me");
+        setUser(res.data);
+      } catch (err) {
+        logout();
+      }
+    };
+
+    loadUser();
   }, [token]);
 
   const login = (tok, usr) => {

@@ -6,6 +6,7 @@ const Note = require("../models/Note");
 const User = require("../models/User");
 const auth = require("../middleware/auth");
 const router = express.Router();
+const admin = require("../middleware/admin");
 
 // Ensure uploads folder exists
 if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
@@ -27,6 +28,7 @@ router.post("/upload", auth, upload.single("file"), async (req, res) => {
       subject,
       description,
       category,
+      approved: false,
       fileUrl: `/uploads/${req.file.filename}`,
       fileName: req.file.originalname,
       uploadedBy: req.user.id,
@@ -41,8 +43,18 @@ router.post("/upload", auth, upload.single("file"), async (req, res) => {
 
 // Get all notes
 router.get("/", async (req, res) => {
-  const notes = await Note.find().sort({ createdAt: -1 });
+  const notes = await Note.find({ approved: true }).sort({ createdAt: -1 });
   res.json(notes);
+});
+
+//ALL NOTES Route
+router.get("/all", auth, admin, async (req, res) => {
+  try {
+    const notes = await Note.find().sort({ createdAt: -1 });
+    res.json(notes);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
 });
 
 // Get my uploaded notes
@@ -84,6 +96,34 @@ router.post("/download/:id", auth, async (req, res) => {
   }
   await Note.findByIdAndUpdate(req.params.id, { $inc: { downloadCount: 1 } });
   res.json({ msg: "Recorded" });
+});
+
+//APPROVE Note
+router.put("/approve/:id", auth, admin, async (req, res) => {
+  try {
+    const note = await Note.findByIdAndUpdate(
+      req.params.id,
+      { approved: true },
+      { new: true },
+    );
+
+    res.json(note);
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
+});
+
+//DELETE Note
+router.delete("/delete/:id", auth, admin, async (req, res) => {
+  try {
+    await Note.findByIdAndDelete(req.params.id);
+
+    res.json({
+      msg: "Note deleted",
+    });
+  } catch (err) {
+    res.status(500).json({ msg: err.message });
+  }
 });
 
 module.exports = router;

@@ -9,6 +9,10 @@ const NoteSchema = new mongoose.Schema({
     enum: ["Notes", "PYQ", "Study Material"],
     default: "Notes",
   },
+  approved: {
+    type: Boolean,
+    default: false,
+  },
   fileUrl: { type: String, required: true },
   fileName: { type: String, required: true },
   uploadedBy: {

@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
   bookmarks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Note" }],
   downloads: [{ type: mongoose.Schema.Types.ObjectId, ref: "Note" }],
   createdAt: { type: Date, default: Date.now },
+  role: { type: String, enum: ["user", "admin"], default: "user" },
 });
 
 module.exports = mongoose.model("User", UserSchema);
