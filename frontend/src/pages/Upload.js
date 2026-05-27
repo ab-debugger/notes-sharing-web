@@ -20,7 +20,7 @@ export default function Upload() {
     data.append("file", file);
     try {
       await axios.post("/api/notes/upload", data);
-      alert("✅ Uploaded successfully!");
+      alert("✅ Uploaded successfully!, Wait for admin approval");
       navigate("/dashboard");
     } catch (err) {
       alert("Upload failed");
